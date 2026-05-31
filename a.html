@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu de Habilidades - Sistema</title>
+    <style>
+        body {
+            background-color: #0b0e14;
+            color: #f8fafc;
+            font-family: 'Segoe UI', -apple-system, Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .hub-container {
+            width: 90%;
+            max-width: 900px;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 850;
+            letter-spacing: 2px;
+            color: #ffffff;
+            margin-bottom: 40px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+        }
+
+        .grid-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 25px;
+            width: 100%;
+        }
+
+        .card-link {
+            background: rgba(30, 41, 59, 0.4);
+            border: 2px solid #1e293b;
+            border-radius: 8px;
+            padding: 35px 20px;
+            text-decoration: none;
+            color: #f1f5f9;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        .card-link:hover {
+            border-color: #38bdf8;
+            background: rgba(30, 41, 59, 0.8);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(56, 189, 248, 0.15);
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="hub-container">
+        <h1>NEXUS DE HABILIDADES</h1>
+        
+        <div class="grid-links">
+            <a href="index.html" class="card-link">
+                SSS Class Revival Hunter
+            </a>
+
+            <a href="novel.html" class="card-link">
+                Climbing the tower with a time stop ability
+            </a>
+
+            <a href="regressor.html" class="card-link">
+                Regression is too much
+            </a>
+        </div>
+    </div>
+
+</body>
+</html>

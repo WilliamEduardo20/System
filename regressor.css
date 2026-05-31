@@ -1,0 +1,108 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&display=swap');
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: #e0e0e0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    min-height: 100vh;
+    font-family: 'Montserrat', sans-serif;
+}
+
+/* Moldura externa com os cantos chanfrados (cortados) */
+.card-container {
+    width: 450px;
+    max-height: 620px;
+    background: #ffffff;
+    border: 4px solid #cccccc;
+    padding: 12px;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    clip-path: polygon(10% 0%, 90% 0%, 100% 7%, 100% 93%, 90% 100%, 10% 100%, 0% 93%, 0% 7%);
+}
+
+/* Fundo interno da carta com o padrão de linhas geométricas em marcas d'água */
+.card-inner {
+    width: 100%;
+    height: 100%;
+    border: 2px solid #dddddd;
+    position: relative;
+    clip-path: polygon(10% 0%, 90% 0%, 100% 7%, 100% 93%, 90% 100%, 10% 100%, 0% 93%, 0% 7%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background-color: whitesmoke;
+    background-size: 40px 40px;
+    overflow: hidden;
+}
+
+/* Elementos de Texto */
+.title-upgrade {
+    font-size: 32px;
+    font-weight: 800;
+    color: #ffffff;
+    text-transform: uppercase;
+    text-align: center;
+    letter-spacing: 2px;
+    text-shadow: 
+        -2px -2px 0 #999,  
+         2px -2px 0 #999,
+        -2px  2px 0 #999,
+         2px  2px 0 #999,
+         0px 4px 6px rgba(0,0,0,0.2);
+    margin-top: 10px;
+    margin-bottom: 10px;
+    z-index: 3;
+}
+
+/* Linha divisória fina */
+.divider {
+    width: 85%;
+    height: 1px;
+    background: #b5b5b5;
+    margin-bottom: 25px;
+    z-index: 3;
+}
+
+/* Caixa de Texto Inferior (Descrição) */
+.description-box {
+    width: 90%;
+    border: 3px solid #ffffff;
+    outline: 2px solid #b5b5b5;
+    background: rgba(255, 255, 255, 0.85);
+    padding: 20px 15px;
+    text-align: center;
+    box-shadow: inset 0 0 15px rgba(0,0,0,0.05);
+    z-index: 3;
+    margin-bottom: 10px;
+}
+
+.desc-text {
+    font-size: 14.5px;
+    font-weight: 700;
+    color: #3a443a;
+    line-height: 1.4;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    letter-spacing: 0.5px;
+}
+
+.warning-text {
+    font-size: 11px;
+    font-weight: 700;
+    color: #4a554a;
+    line-height: 1.5;
+    text-transform: uppercase;
+    text-align: left;
+    display: inline-block;
+    width: 100%;
+    padding-left: 5px;
+}
