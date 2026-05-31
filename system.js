@@ -35,6 +35,30 @@ const staticSkills = {
                 <li>Habilidades equipadas na Matriz possuem nível máximo [5]. Ao atingirem o topo, necessitam de uma [Pedra de Promoção] para subir seu Rank de classificação.</li>
                 <li><strong>Escala Sábia:</strong> E &lt; D &lt; C &lt; B &lt; A &lt; S &lt; SS &lt; SSS &lt; EX</li>
             </ul>`
+    },
+    passos: {
+        title: "Passos Fantasma [Rank A]",
+        desc: "Habilidade passiva. Seus passos são leves como uma pluma e não emitem sons, mas pequenas vibrações podem ser detectadas.",
+        type: 'locked',
+        extra: `<div class="sub-section-title">&lt;Bloqueada&gt;</div>`
+    },
+    furtividade: {
+        title: "Furtividade [Rank B]",
+        desc: "Habilidade passiva. Permite ao usuário controlar o nível de sua presença.",
+        type: 'locked',
+        extra: `<div class="sub-section-title">&lt;Bloqueada&gt;</div>`
+    },
+    adaptabilidade: {
+        title: "Adaptabilidade [Rank C]",
+        desc: "Habilidade passiva. Permite a sua mente a se adaptar mais rápido às situações desconhecidas.",
+        type: 'locked',
+        extra: `<div class="sub-section-title">&lt;Bloqueada&gt;</div>`
+    },
+    criacao: {
+        title: "Criação [Rank A]",
+        desc: "Habilidade passiva. Permite que o usuário crie qualquer coisa física com maior facilidade que outros.",
+        type: 'locked',
+        extra: `<div class="sub-section-title">&lt;Bloqueada&gt;</div>`
     }
 };
 
