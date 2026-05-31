@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Janela de Status do Sistema</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;600;700&display=swap');
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #060913;
+            background-image: radial-gradient(circle at center, #111a33 0%, #050811 100%);
+            font-family: 'Rajdhani', sans-serif;
+            color: #e2e8f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Container principal */
+        .system-window {
+            background: rgba(10, 18, 36, 0.85);
+            border: 2px solid #00d2ff;
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.25), inset 0 0 15px rgba(0, 210, 255, 0.1);
+            width: 100%;
+            max-width: 650px;
+            border-radius: 4px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            position: relative;
+        }
+
+        .system-window::before, .system-window::after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border: 2px solid #00d2ff;
+        }
+        .system-window::before { top: 5px; left: 5px; border-right: none; border-bottom: none; }
+        .system-window::after { bottom: 5px; right: 5px; border-left: none; border-top: none; }
+
+        /* Botão "?" no Canto Superior Direito */
+        .help-button {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.4rem;
+            color: #00d2ff;
+            cursor: pointer;
+            text-shadow: 0 0 8px rgba(0, 210, 255, 0.8);
+            transition: all 0.2s ease;
+            user-select: none;
+            z-index: 10;
+        }
+
+        .help-button:hover {
+            color: #ffffff;
+            text-shadow: 0 0 15px #00d2ff, 0 0 5px #ffffff;
+            transform: scale(1.15);
+        }
+
+        /* Cabeçalho */
+        .header-panel {
+            border-bottom: 1px solid rgba(0, 210, 255, 0.3);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+            padding-right: 30px; /* Protege o layout para o botão "?" não sobrepor */
+        }
+
+        .title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem;
+            color: #00d2ff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 8px rgba(0, 210, 255, 0.6);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 8px;
+            font-size: 1.2rem;
+        }
+
+        .info-item span { color: #88a0c0; }
+        .info-item strong { color: #ffffff; text-shadow: 0 0 4px rgba(255, 255, 255, 0.3); }
+
+        /* Seções */
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            color: #00ffcc;
+            font-size: 1.2rem;
+            margin-top: 20px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-left: 4px solid #00ffcc;
+            padding-left: 8px;
+        }
+
+        .skills-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 25px;
+        }
+
+        /* Itens Clicáveis da Lista */
+        .skill-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px 15px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .skill-item:hover {
+            background: rgba(0, 210, 255, 0.08);
+            border-color: #00d2ff;
+            box-shadow: 0 0 12px rgba(0, 210, 255, 0.2);
+        }
+
+        .skill-main {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .skill-name { font-weight: 600; font-size: 1.2rem; }
+
+        .tag {
+            font-size: 0.85rem;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: bold;
+        }
+        .tag-nv { background: #1a2e4c; color: #00d2ff; border: 1px solid #00d2ff; }
+        .tag-rank { background: #2d1a4c; color: #d200ff; border: 1px solid #d200ff; }
+        
+        .status-tag {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
+        .status-unlocked { color: #00ffcc; text-shadow: 0 0 5px rgba(0, 255, 204, 0.5); }
+        .status-locked { color: #ff3366; text-shadow: 0 0 5px rgba(255, 51, 102, 0.5); }
+
+        /* Matriz de Temas Fixa na Tela Principal */
+        .matrix-box {
+            background: rgba(0, 210, 255, 0.02);
+            border: 1px solid rgba(0, 210, 255, 0.2);
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .theme-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8px;
+            font-size: 1rem;
+            text-align: center;
+        }
+
+        .theme-table th {
+            background: rgba(0, 210, 255, 0.15);
+            color: #00d2ff;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 500;
+            padding: 8px;
+            border: 1px solid rgba(0, 210, 255, 0.3);
+        }
+
+        .theme-table td {
+            padding: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(0, 0, 0, 0.3);
+            color: #cbd5e1;
+        }
+
+        /* Janela Flutuante (Modais) */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(3, 6, 13, 0.85);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .skill-details-window {
+            background: rgba(12, 22, 43, 0.98);
+            border: 2px solid #ffcc00;
+            box-shadow: 0 0 30px rgba(255, 204, 0, 0.3), inset 0 0 20px rgba(255, 204, 0, 0.05);
+            width: 100%;
+            max-width: 550px;
+            border-radius: 4px;
+            padding: 25px;
+            position: relative;
+            transform: scale(0.9);
+            transition: transform 0.25s ease;
+        }
+
+        /* Se for uma habilidade bloqueada */
+        .skill-details-window.locked-style {
+            border-color: #ff3366;
+            box-shadow: 0 0 30px rgba(255, 51, 102, 0.3);
+        }
+
+        /* Estilo especial para o menu "Sobre a Habilidade" (?) */
+        .skill-details-window.about-style {
+            border-color: #00ffcc;
+            box-shadow: 0 0 30px rgba(0, 255, 204, 0.3);
+        }
+
+        .modal-overlay.active .skill-details-window { transform: scale(1); }
+
+        .skill-details-window::before, .skill-details-window::after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border: 2px solid #ffcc00;
+        }
+        .skill-details-window.locked-style::before, .skill-details-window.locked-style::after { border-color: #ff3366; }
+        .skill-details-window.about-style::before, .skill-details-window.about-style::after { border-color: #00ffcc; }
+        .skill-details-window::before { top: 5px; left: 5px; border-right: none; border-bottom: none; }
+        .skill-details-window::after { bottom: 5px; right: 5px; border-left: none; border-top: none; }
+
+        .skill-description {
+            font-size: 1.15rem;
+            line-height: 1.5;
+            color: #cbd5e1;
+            margin-top: 15px;
+            margin-bottom: 20px;
+        }
+
+        .sub-section-title {
+            font-size: 1.1rem;
+            color: #ffaa00;
+            margin-bottom: 8px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .locked-style .sub-section-title { color: #ff3366; }
+        .about-style .sub-section-title { color: #00ffcc; }
+
+        .penalty-list {
+            padding-left: 20px;
+            margin-bottom: 20px;
+            color: #f1f5f9;
+        }
+        .penalty-list li { margin-bottom: 8px; font-size: 1.05rem; }
+
+        .close-btn {
+            display: block;
+            width: 100%;
+            background: rgba(255, 204, 0, 0.1);
+            border: 1px solid #ffcc00;
+            color: #ffcc00;
+            font-family: 'Orbitron', sans-serif;
+            padding: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+        .close-btn:hover { background: #ffcc00; color: #060913; }
+
+        .locked-style .close-btn {
+            background: rgba(255, 51, 102, 0.1);
+            border-color: #ff3366;
+            color: #ff3366;
+        }
+        .locked-style .close-btn:hover { background: #ff3366; color: #ffffff; }
+
+        .about-style .close-btn {
+            background: rgba(0, 255, 204, 0.1);
+            border-color: #00ffcc;
+            color: #00ffcc;
+        }
+        .about-style .close-btn:hover { background: #00ffcc; color: #060913; }
+    </style>
+</head>
+<body>
+    <div class="system-window">
+        <div class="help-button" onclick="openModal('sobre_indice')" title="Sobre a habilidade Índice Multiversal">?</div>
+
+        <div class="header-panel">
+            <div class="title">Janela de Status do Usuário</div>
+            <div class="info-grid">
+                <div class="info-item"><span>Nome:</span> <strong>William Eduardo D. Martini Miraselli</strong></div>
+                <div class="info-item"><span>Nível:</span> <strong>1</strong></div>
+                <div class="info-item"><span>Andar:</span> <strong>0</strong></div>
+            </div>
+        </div>
+
+        <div class="section-title">Habilidades</div>
+        <ul class="skills-list">
+            <li class="skill-item" onclick="openModal('indice')">
+                <div class="skill-main">
+                    <span class="skill-name">Índice Multiversal</span>
+                    <span class="tag tag-nv">Nv. 1</span>
+                    <span class="tag tag-rank">???</span>
+                </div>
+                <span class="status-tag status-unlocked">ATIVADA</span>
+            </li>
+            
+            <li class="skill-item" onclick="openModal('passos')">
+                <div class="skill-main">
+                    <span class="skill-name">Passos Fantasma</span>
+                    <span class="tag tag-nv">Nv. 1</span>
+                    <span class="tag tag-rank">Rank A</span>
+                </div>
+                <span class="status-tag status-locked">&lt;Bloqueada&gt;</span>
+            </li>
+            <li class="skill-item" onclick="openModal('furtividade')">
+                <div class="skill-main">
+                    <span class="skill-name">Furtividade</span>
+                    <span class="tag tag-nv">Nv. 1</span>
+                    <span class="tag tag-rank">Rank B</span>
+                </div>
+                <span class="status-tag status-locked">&lt;Bloqueada&gt;</span>
+            </li>
+            <li class="skill-item" onclick="openModal('adaptabilidade')">
+                <div class="skill-main">
+                    <span class="skill-name">Adaptabilidade</span>
+                    <span class="tag tag-nv">Nv. 1</span>
+                    <span class="tag tag-rank">Rank C</span>
+                </div>
+                <span class="status-tag status-locked">&lt;Bloqueada&gt;</span>
+            </li>
+            <li class="skill-item" onclick="openModal('criacao')">
+                <div class="skill-main">
+                    <span class="skill-name">Criação</span>
+                    <span class="tag tag-nv">Nv. 1</span>
+                    <span class="tag tag-rank">Rank A</span>
+                </div>
+                <span class="status-tag status-locked">&lt;Bloqueada&gt;</span>
+            </li>
+        </ul>
+
+        <div class="matrix-box">
+            <div class="title" style="font-size: 1rem; color: #00ffcc;">Matriz de Temas Aplicados</div>
+            <table class="theme-table">
+                <thead>
+                    <tr>
+                        <th>Universo 1</th>
+                        <th>Universo 2</th>
+                        <th>Universo 3</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Hab. 1</td><td>Hab. 1</td><td>Hab. 1</td></tr>
+                    <tr><td>Hab. 2</td><td>Hab. 2</td><td>Hab. 2</td></tr>
+                    <tr><td>Hab. 3</td><td>Hab. 3</td><td>Hab. 3</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="systemModal">
+        <div class="skill-details-window" id="modalWindow">
+            <div class="title" id="modalTitle">Título do Alerta</div>
+            <p class="skill-description" id="modalDescription">Descrição da habilidade aqui.</p>
+            
+            <div id="modalExtraContent"></div>
+
+            <button class="close-btn" onclick="closeModal()">Fechar Registro</button>
+        </div>
+    </div>
+
+    <script>
+        const modal = document.getElementById('systemModal');
+        const modalWindow = document.getElementById('modalWindow');
+        const mTitle = document.getElementById('modalTitle');
+        const mDesc = document.getElementById('modalDescription');
+        const mExtra = document.getElementById('modalExtraContent');
+
+        const skillsData = {
+            indice: {
+                title: "Índice Multiversal [Nv. 1]",
+                desc: "Permite ao usuário adquirir poderes, armas, itens, autoridades e etc... de outros mundos. Mas o usuário deve definir um tema à habilidade, podendo adquirir coisas somente dentro deste tema. Temas abrangentes são proibidos.",
+                type: 'unlocked',
+                extra: `
+                    <div class="sub-section-title">Penalidades & Condições</div>
+                    <ul class="penalty-list">
+                        <li>O usuário não pode adquirir ou usar habilidades sem ser por meio desta habilidade.</li>
+                        <li><span style="color: #ff3366; font-weight: bold;">[???] &lt;Oculto&gt;:</span> Ao escolher um universo, o usuário, ao completar a Torre, deverá viver como o protagonista da obra sem suas memórias e habilidades.</li>
+                    </ul>`
+            },
+            sobre_indice: {
+                title: "Sobre a Habilidade: Índice Multiversal",
+                desc: "Diretrizes e regras sistêmicas fundamentais ligadas à Habilidade Exclusiva do usuário.",
+                type: 'about',
+                extra: `
+                    <div class="sub-section-title">Regras de Sincronização</div>
+                    <ul class="penalty-list">
+                        <li><strong>1.</strong> Ela não pode ser copiada e ou anulada por NINGUÉM.</li>
+                        <li><strong>2.</strong> Clones que copiem as habilidades do usuário não podem usar o Índice ou habilidades atreladas, mas podem usar e evoluir as outras habilidades do usuário.</li>
+                        <li><strong>3.</strong> A cada nível da habilidade o usuário pode adicionar uma nova lista ou coluna no nível [5] ou [10], o usuário pode criar uma nova tabela [3x3].</li>
+                        <li><strong>4.</strong> O nível max da habilidade é [15].</li>
+                    </ul>
+                    <div class="sub-section-title">Sistema Extra & Progressão</div>
+                    <ul class="penalty-list">
+                        <li><strong>Nv. max de habilidade:</strong> [5].</li>
+                        <li><strong>Evolução:</strong> Após uma habilidade atingir o nível [5], uma [Pedra de Promoção] pode ser usada para evoluir [1] rank da habilidade.</li>
+                        <li><strong>Ranks de Habilidade:</strong> [E] < [D] < [C] < [B] < [A] < [S] < [Ex]</li>
+                    </ul>`
+            },
+            passos: {
+                title: "Passos Fantasma [Rank A]",
+                desc: "Habilidade passiva. Seus passos são leves como uma pluma e não emitem sons, mas pequenas vibrações podem ser detectadas.",
+                type: 'locked',
+                extra: `<div class="sub-section-title">&lt;Bloqueada&gt;</div>`
+            },
+            furtividade: {
+                title: "Furtividade [Rank B]",
+                desc: "Habilidade passiva. Permite ao usuário controlar o nível de sua presença.",
+                type: 'locked',
+                extra: `<div class="sub-section-title">&lt;Bloqueada&gt;</div>`
+            },
+            adaptabilidade: {
+                title: "Adaptabilidade [Rank C]",
+                desc: "Habilidade passiva. Permite a sua mente a se adaptar mais rápido às situações desconhecidas.",
+                type: 'locked',
+                extra: `<div class="sub-section-title">&lt;Bloqueada&gt;</div>`
+            },
+            criacao: {
+                title: "Criação [Rank A]",
+                desc: "Habilidade passiva. Permite que o usuário crie qualquer coisa física com maior facilidade que outros.",
+                type: 'locked',
+                extra: `<div class="sub-section-title">&lt;Bloqueada&gt;</div>`
+            }
+        };
+
+        function openModal(skillKey) {
+            const data = skillsData[skillKey];
+            if (!data) return;
+
+            modalWindow.classList.remove('locked-style', 'about-style');
+            
+            mTitle.innerText = data.title;
+            mDesc.innerHTML = data.desc;
+            mExtra.innerHTML = data.extra;
+
+            // Configuração dinâmica de estilos baseada na aba/habilidade clicada
+            if (data.type === 'locked') {
+                modalWindow.classList.add('locked-style');
+                mTitle.style.color = '#ff3366';
+                mTitle.style.textShadow = '0 0 8px rgba(255,51,102,0.5)';
+            } else if (data.type === 'about') {
+                modalWindow.classList.add('about-style');
+                mTitle.style.color = '#00ffcc';
+                mTitle.style.textShadow = '0 0 8px rgba(0,255,204,0.5)';
+            } else {
+                mTitle.style.color = '#ffcc00';
+                mTitle.style.textShadow = '0 0 8px rgba(255,204,0,0.5)';
+            }
+
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            modal.classList.remove('active');
+        }
+
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) closeModal();
+        });
+    </script>
+</body>
+</html>
