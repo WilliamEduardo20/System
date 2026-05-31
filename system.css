@@ -1,0 +1,432 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #060913;
+    background-image: radial-gradient(circle at center, #111a33 0%, #050811 100%);
+    font-family: 'Rajdhani', sans-serif;
+    color: #e2e8f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+/* Container principal */
+.system-window {
+    background: rgba(10, 18, 36, 0.85);
+    border: 2px solid #00d2ff;
+    box-shadow: 0 0 20px rgba(0, 210, 255, 0.25), inset 0 0 15px rgba(0, 210, 255, 0.1);
+    width: 100%;
+    max-width: 700px;
+    border-radius: 4px;
+    padding: 25px;
+    backdrop-filter: blur(10px);
+    position: relative;
+}
+
+.system-window::before, .system-window::after {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border: 2px solid #00d2ff;
+}
+.system-window::before { top: 5px; left: 5px; border-right: none; border-bottom: none; }
+.system-window::after { bottom: 5px; right: 5px; border-left: none; border-top: none; }
+
+/* Botão "?" no Canto Superior Direito */
+.help-button {
+    position: absolute;
+    top: 20px;
+    right: 25px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.4rem;
+    color: #00d2ff;
+    cursor: pointer;
+    text-shadow: 0 0 8px rgba(0, 210, 255, 0.8);
+    transition: all 0.2s ease;
+    user-select: none;
+    z-index: 10;
+}
+
+.help-button:hover {
+    color: #ffffff;
+    text-shadow: 0 0 15px #00d2ff, 0 0 5px #ffffff;
+    transform: scale(1.15);
+}
+
+/* Cabeçalho */
+.header-panel {
+    border-bottom: 1px solid rgba(0, 210, 255, 0.3);
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+    padding-right: 30px;
+}
+
+.title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.1rem;
+    color: #00d2ff;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+    text-shadow: 0 0 8px rgba(0, 210, 255, 0.6);
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 8px;
+    font-size: 1.2rem;
+}
+
+.info-item span { color: #88a0c0; }
+.info-item strong { color: #ffffff; text-shadow: 0 0 4px rgba(255, 255, 255, 0.3); }
+
+/* Seções */
+.section-title {
+    font-family: 'Orbitron', sans-serif;
+    color: #00ffcc;
+    font-size: 1.2rem;
+    margin-top: 20px;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-left: 4px solid #00ffcc;
+    padding-left: 8px;
+}
+
+.skills-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 25px;
+}
+
+.skill-item {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 12px 15px;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.skill-item:hover {
+    background: rgba(0, 210, 255, 0.08);
+    border-color: #00d2ff;
+    box-shadow: 0 0 12px rgba(0, 210, 255, 0.2);
+}
+
+.skill-main {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.skill-name { font-weight: 600; font-size: 1.2rem; }
+
+.tag {
+    font-size: 0.85rem;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: bold;
+}
+.tag-nv { background: #1a2e4c; color: #00d2ff; border: 1px solid #00d2ff; }
+.tag-rank { background: #2d1a4c; color: #d200ff; border: 1px solid #d200ff; }
+
+.status-tag {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    font-weight: bold;
+}
+.status-unlocked { color: #00ffcc; text-shadow: 0 0 5px rgba(0, 255, 204, 0.5); }
+.status-locked { color: #ff3366; text-shadow: 0 0 5px rgba(255, 51, 102, 0.5); }
+
+/* Matriz de Temas (Grade Interativa) */
+.matrix-box {
+    background: rgba(0, 210, 255, 0.02);
+    border: 1px solid rgba(0, 210, 255, 0.2);
+    border-radius: 4px;
+    padding: 15px;
+    margin-top: 15px;
+}
+
+.theme-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 8px;
+    font-size: 1rem;
+    text-align: center;
+}
+
+.theme-table th {
+    background: rgba(0, 210, 255, 0.15);
+    color: #00d2ff;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 600;
+    padding: 10px 5px;
+    border: 1px solid rgba(0, 210, 255, 0.3);
+    font-size: 0.95rem;
+}
+
+.theme-table td {
+    padding: 12px 6px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(0, 0, 0, 0.3);
+    color: #cbd5e1;
+}
+
+/* Slots Interativos de Habilidade */
+.matrix-slot {
+    cursor: pointer;
+    color: #64748b;
+    font-style: italic;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    user-select: none;
+    border: 1px dashed rgba(255, 255, 255, 0.1) !important;
+}
+
+.matrix-slot:hover {
+    background: rgba(0, 255, 204, 0.07);
+    color: #00ffcc;
+    border-color: rgba(0, 255, 204, 0.3) !important;
+}
+
+/* Slot Preenchido */
+.matrix-slot.equipped {
+    color: #ffffff;
+    font-weight: 600;
+    font-style: normal;
+    background: rgba(0, 210, 255, 0.05);
+    border: 1px solid rgba(0, 210, 255, 0.2) !important;
+}
+
+.matrix-slot.equipped .slot-rank {
+    color: #d200ff;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.8rem;
+    margin-left: 4px;
+    font-weight: bold;
+}
+
+/* Janela Flutuante (Modais) */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(3, 6, 13, 0.85);
+    backdrop-filter: blur(8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+    padding: 20px;
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* JANELA DE DETALHES/SELEÇÃO ATUALIZADA (Máximo 75vh com barra de rolagem estilizada) */
+.skill-details-window {
+    background: rgba(12, 22, 43, 0.98);
+    border: 2px solid #ffcc00;
+    box-shadow: 0 0 30px rgba(255, 204, 0, 0.3), inset 0 0 20px rgba(255, 204, 0, 0.05);
+    width: 100%;
+    max-width: 550px;
+    max-height: 99vh;
+    overflow-y: auto;          /* Ativa a rolagem vertical se o conteúdo passar do limite */
+    border-radius: 4px;
+    padding: 25px;
+    position: relative;
+    transform: scale(0.9);
+    transition: transform 0.25s ease;
+}
+
+/* Estilização da barra de rolagem (Scrollbar) interna do modal para combinar com o tema */
+.skill-details-window::-webkit-scrollbar {
+    width: 6px;
+}
+.skill-details-window::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+}
+.skill-details-window::-webkit-scrollbar-thumb {
+    background: rgba(0, 210, 255, 0.4);
+    border-radius: 3px;
+}
+.skill-details-window::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 255, 204, 0.6);
+}
+
+.skill-details-window.locked-style { border-color: #ff3366; box-shadow: 0 0 30px rgba(255, 51, 102, 0.3); }
+.skill-details-window.about-style { border-color: #00ffcc; box-shadow: 0 0 30px rgba(0, 255, 204, 0.3); }
+
+.modal-overlay.active .skill-details-window { transform: scale(1); }
+
+.skill-details-window::before, .skill-details-window::after {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border: 2px solid #ffcc00;
+}
+.skill-details-window.locked-style::before, .skill-details-window.locked-style::after { border-color: #ff3366; }
+.skill-details-window.about-style::before, .skill-details-window.about-style::after { border-color: #00ffcc; }
+.skill-details-window::before { top: 5px; left: 5px; border-right: none; border-bottom: none; }
+.skill-details-window::after { bottom: 5px; right: 5px; border-left: none; border-top: none; }
+
+.skill-description {
+    font-size: 1.15rem;
+    line-height: 1.5;
+    color: #cbd5e1;
+    margin-top: 15px;
+    margin-bottom: 5px;
+}
+
+.sub-section-title {
+    font-size: 1.1rem;
+    color: #ffaa00;
+    margin-bottom: 8px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+.locked-style .sub-section-title { color: #ff3366; }
+.about-style .sub-section-title { color: #00ffcc; }
+
+.penalty-list {
+    padding-left: 20px;
+    margin-bottom: 20px;
+    color: #f1f5f9;
+}
+.penalty-list li { margin-bottom: 8px; font-size: 1.05rem; }
+
+/* Lista de Seleção Interna de Habilidades */
+.selection-menu-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 15px 0;
+    padding-right: 5px;
+}
+
+.selection-option {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+.selection-option:hover {
+    background: rgba(0, 255, 204, 0.1);
+    border-color: #00ffcc;
+}
+
+.option-name { font-weight: 600; color: #ffffff; }
+.option-rank { font-family: 'Orbitron', sans-serif; color: #d200ff; font-weight: bold; }
+
+.close-btn {
+    display: block;
+    width: 100%;
+    background: rgba(255, 204, 0, 0.1);
+    border: 1px solid #ffcc00;
+    color: #ffcc00;
+    font-family: 'Orbitron', sans-serif;
+    padding: 10px;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: bold;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+.close-btn:hover { background: #ffcc00; color: #060913; }
+.locked-style .close-btn { background: rgba(255, 51, 102, 0.1); border-color: #ff3366; color: #ff3366; }
+.locked-style .close-btn:hover { background: #ff3366; color: #ffffff; }
+.about-style .close-btn { background: rgba(0, 255, 204, 0.1); border-color: #00ffcc; color: #00ffcc; }
+.about-style .close-btn:hover { background: #00ffcc; color: #060913; }
+
+
+
+
+/* JANELA FLUTUANTE (Modificada para se ajustar sem rolar o cabeçalho) */
+.skill-details-window {
+    background: rgba(12, 22, 43, 0.98);
+    border: 2px solid #ffcc00;
+    box-shadow: 0 0 30px rgba(255, 204, 0, 0.3), inset 0 0 20px rgba(255, 204, 0, 0.05);
+    width: 100%;
+    max-width: 550px;
+    max-height: 99vh;          /* Mantém o limite da janela em 75% da tela */
+    display: flex;             /* Alinha os itens verticalmente */
+    flex-direction: column;
+    border-radius: 4px;
+    padding: 25px;
+    position: relative;
+    transform: scale(0.9);
+    transition: transform 0.25s ease;
+}
+
+/* LISTA INTERNA DE SELEÇÃO (Onde a rolagem vai acontecer de fato) */
+.selection-menu-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 15px 0;
+    padding-right: 8px;
+    overflow-y: auto;          /* Ativa a rolagem SOMENTE na lista de habilidades */
+    flex-grow: 1;              /* Faz a lista ocupar o espaço disponível dinamicamente */
+}
+
+/* Estilização da barra de rolagem exclusiva da lista de habilidades */
+.selection-menu-list::-webkit-scrollbar {
+    width: 6px;
+}
+.selection-menu-list::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+}
+.selection-menu-list::-webkit-scrollbar-thumb {
+    background: rgba(0, 210, 255, 0.4);
+    border-radius: 3px;
+}
+.selection-menu-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 255, 204, 0.6);
+}
+
+#modalExtraContent {
+    overflow-y: auto;
+    max-height: 40vh;
+    padding-right: 4px;
+}
+#modalExtraContent::-webkit-scrollbar {
+    width: 4px;
+}
+#modalExtraContent::-webkit-scrollbar-thumb {
+    background: rgba(0, 255, 204, 0.2);
+    border-radius: 2px;
+}

@@ -3,506 +3,616 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Janela de Status do Sistema</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;600;700&display=swap');
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            background-color: #060913;
-            background-image: radial-gradient(circle at center, #111a33 0%, #050811 100%);
-            font-family: 'Rajdhani', sans-serif;
-            color: #e2e8f0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        /* Container principal */
-        .system-window {
-            background: rgba(10, 18, 36, 0.85);
-            border: 2px solid #00d2ff;
-            box-shadow: 0 0 20px rgba(0, 210, 255, 0.25), inset 0 0 15px rgba(0, 210, 255, 0.1);
-            width: 100%;
-            max-width: 650px;
-            border-radius: 4px;
-            padding: 25px;
-            backdrop-filter: blur(10px);
-            position: relative;
-        }
-
-        .system-window::before, .system-window::after {
-            content: '';
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            border: 2px solid #00d2ff;
-        }
-        .system-window::before { top: 5px; left: 5px; border-right: none; border-bottom: none; }
-        .system-window::after { bottom: 5px; right: 5px; border-left: none; border-top: none; }
-
-        /* Botão "?" no Canto Superior Direito */
-        .help-button {
-            position: absolute;
-            top: 20px;
-            right: 25px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.4rem;
-            color: #00d2ff;
-            cursor: pointer;
-            text-shadow: 0 0 8px rgba(0, 210, 255, 0.8);
-            transition: all 0.2s ease;
-            user-select: none;
-            z-index: 10;
-        }
-
-        .help-button:hover {
-            color: #ffffff;
-            text-shadow: 0 0 15px #00d2ff, 0 0 5px #ffffff;
-            transform: scale(1.15);
-        }
-
-        /* Cabeçalho */
-        .header-panel {
-            border-bottom: 1px solid rgba(0, 210, 255, 0.3);
-            padding-bottom: 15px;
-            margin-bottom: 20px;
-            padding-right: 30px; /* Protege o layout para o botão "?" não sobrepor */
-        }
-
-        .title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.1rem;
-            color: #00d2ff;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 10px;
-            text-shadow: 0 0 8px rgba(0, 210, 255, 0.6);
-        }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 8px;
-            font-size: 1.2rem;
-        }
-
-        .info-item span { color: #88a0c0; }
-        .info-item strong { color: #ffffff; text-shadow: 0 0 4px rgba(255, 255, 255, 0.3); }
-
-        /* Seções */
-        .section-title {
-            font-family: 'Orbitron', sans-serif;
-            color: #00ffcc;
-            font-size: 1.2rem;
-            margin-top: 20px;
-            margin-bottom: 12px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border-left: 4px solid #00ffcc;
-            padding-left: 8px;
-        }
-
-        .skills-list {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-bottom: 25px;
-        }
-
-        /* Itens Clicáveis da Lista */
-        .skill-item {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 12px 15px;
-            border-radius: 4px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: all 0.2s ease;
-            cursor: pointer;
-        }
-
-        .skill-item:hover {
-            background: rgba(0, 210, 255, 0.08);
-            border-color: #00d2ff;
-            box-shadow: 0 0 12px rgba(0, 210, 255, 0.2);
-        }
-
-        .skill-main {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .skill-name { font-weight: 600; font-size: 1.2rem; }
-
-        .tag {
-            font-size: 0.85rem;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-family: 'Orbitron', sans-serif;
-            font-weight: bold;
-        }
-        .tag-nv { background: #1a2e4c; color: #00d2ff; border: 1px solid #00d2ff; }
-        .tag-rank { background: #2d1a4c; color: #d200ff; border: 1px solid #d200ff; }
-        
-        .status-tag {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.85rem;
-            letter-spacing: 1px;
-            font-weight: bold;
-        }
-        .status-unlocked { color: #00ffcc; text-shadow: 0 0 5px rgba(0, 255, 204, 0.5); }
-        .status-locked { color: #ff3366; text-shadow: 0 0 5px rgba(255, 51, 102, 0.5); }
-
-        /* Matriz de Temas Fixa na Tela Principal */
-        .matrix-box {
-            background: rgba(0, 210, 255, 0.02);
-            border: 1px solid rgba(0, 210, 255, 0.2);
-            border-radius: 4px;
-            padding: 15px;
-            margin-top: 15px;
-        }
-
-        .theme-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 8px;
-            font-size: 1rem;
-            text-align: center;
-        }
-
-        .theme-table th {
-            background: rgba(0, 210, 255, 0.15);
-            color: #00d2ff;
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 500;
-            padding: 8px;
-            border: 1px solid rgba(0, 210, 255, 0.3);
-        }
-
-        .theme-table td {
-            padding: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            background: rgba(0, 0, 0, 0.3);
-            color: #cbd5e1;
-        }
-
-        /* Janela Flutuante (Modais) */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(3, 6, 13, 0.85);
-            backdrop-filter: blur(8px);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.25s ease;
-            padding: 20px;
-        }
-
-        .modal-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .skill-details-window {
-            background: rgba(12, 22, 43, 0.98);
-            border: 2px solid #ffcc00;
-            box-shadow: 0 0 30px rgba(255, 204, 0, 0.3), inset 0 0 20px rgba(255, 204, 0, 0.05);
-            width: 100%;
-            max-width: 550px;
-            border-radius: 4px;
-            padding: 25px;
-            position: relative;
-            transform: scale(0.9);
-            transition: transform 0.25s ease;
-        }
-
-        /* Se for uma habilidade bloqueada */
-        .skill-details-window.locked-style {
-            border-color: #ff3366;
-            box-shadow: 0 0 30px rgba(255, 51, 102, 0.3);
-        }
-
-        /* Estilo especial para o menu "Sobre a Habilidade" (?) */
-        .skill-details-window.about-style {
-            border-color: #00ffcc;
-            box-shadow: 0 0 30px rgba(0, 255, 204, 0.3);
-        }
-
-        .modal-overlay.active .skill-details-window { transform: scale(1); }
-
-        .skill-details-window::before, .skill-details-window::after {
-            content: '';
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            border: 2px solid #ffcc00;
-        }
-        .skill-details-window.locked-style::before, .skill-details-window.locked-style::after { border-color: #ff3366; }
-        .skill-details-window.about-style::before, .skill-details-window.about-style::after { border-color: #00ffcc; }
-        .skill-details-window::before { top: 5px; left: 5px; border-right: none; border-bottom: none; }
-        .skill-details-window::after { bottom: 5px; right: 5px; border-left: none; border-top: none; }
-
-        .skill-description {
-            font-size: 1.15rem;
-            line-height: 1.5;
-            color: #cbd5e1;
-            margin-top: 15px;
-            margin-bottom: 20px;
-        }
-
-        .sub-section-title {
-            font-size: 1.1rem;
-            color: #ffaa00;
-            margin-bottom: 8px;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-        .locked-style .sub-section-title { color: #ff3366; }
-        .about-style .sub-section-title { color: #00ffcc; }
-
-        .penalty-list {
-            padding-left: 20px;
-            margin-bottom: 20px;
-            color: #f1f5f9;
-        }
-        .penalty-list li { margin-bottom: 8px; font-size: 1.05rem; }
-
-        .close-btn {
-            display: block;
-            width: 100%;
-            background: rgba(255, 204, 0, 0.1);
-            border: 1px solid #ffcc00;
-            color: #ffcc00;
-            font-family: 'Orbitron', sans-serif;
-            padding: 10px;
-            font-size: 1rem;
-            cursor: pointer;
-            font-weight: bold;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            transition: all 0.2s ease;
-            text-align: center;
-        }
-        .close-btn:hover { background: #ffcc00; color: #060913; }
-
-        .locked-style .close-btn {
-            background: rgba(255, 51, 102, 0.1);
-            border-color: #ff3366;
-            color: #ff3366;
-        }
-        .locked-style .close-btn:hover { background: #ff3366; color: #ffffff; }
-
-        .about-style .close-btn {
-            background: rgba(0, 255, 204, 0.1);
-            border-color: #00ffcc;
-            color: #00ffcc;
-        }
-        .about-style .close-btn:hover { background: #00ffcc; color: #060913; }
-    </style>
+    <link rel="stylesheet" href="style.css">
+    <title>Interface de Habilidade - Relógio do Retornador</title>
 </head>
 <body>
-    <div class="system-window">
-        <div class="help-button" onclick="openModal('sobre_indice')" title="Sobre a habilidade Índice Multiversal">?</div>
+    <div class="ui-container">
+        <div class="particle p1"></div>
+        <div class="particle p2"></div>
+        <div class="particle p3"></div>
+        <div class="particle p4"></div>
+        <div class="particle p5"></div>
 
-        <div class="header-panel">
-            <div class="title">Janela de Status do Usuário</div>
-            <div class="info-grid">
-                <div class="info-item"><span>Nome:</span> <strong>William Eduardo D. Martini Miraselli</strong></div>
-                <div class="info-item"><span>Nível:</span> <strong>1</strong></div>
-                <div class="info-item"><span>Andar:</span> <strong>0</strong></div>
+        <div class="top-bracket"></div>
+
+        <div class="card-outer">
+            <div class="card-middle">
+                <div class="card-inner">
+                    <div class="skill-title">[RELÓGIO DO REGRESSOR]</div>
+                    <div class="skill-rank">RANK: EX</div>
+                    
+                    <div class="skill-description">
+                        <div class="text-block">
+                            <span class="label-highlight">EFEITO:</span> ATIVADA AUTOMATICAMENTE NO MOMENTO DE SUA MORTE. VOCE VOLTARA 24 HORAS NO TEMPO ANTES DO MOMENTO DE SUA MORTE. SUAS MEMORIAS E EXPERIÊNCIA SÃO PRESERVADAS QUANDO RETORNAR.
+                        </div>
+                        
+                        <div class="text-block">
+                            ※ POREM, EXISTIRÁ UMA PENALIDADE EQUIVALENTE AO SEU RANK.
+                        </div>
+                        
+                        <div class="text-block">SSS CLASS REVIVAL HUNTER</div>
+                    </div>
+                </div>
             </div>
         </div>
+    </div>
 
-        <div class="section-title">Habilidades</div>
-        <ul class="skills-list">
-            <li class="skill-item" onclick="openModal('indice')">
-                <div class="skill-main">
-                    <span class="skill-name">Índice Multiversal</span>
-                    <span class="tag tag-nv">Nv. 1</span>
-                    <span class="tag tag-rank">???</span>
-                </div>
-                <span class="status-tag status-unlocked">ATIVADA</span>
-            </li>
-            
-            <li class="skill-item" onclick="openModal('passos')">
-                <div class="skill-main">
-                    <span class="skill-name">Passos Fantasma</span>
-                    <span class="tag tag-nv">Nv. 1</span>
-                    <span class="tag tag-rank">Rank A</span>
-                </div>
-                <span class="status-tag status-locked">&lt;Bloqueada&gt;</span>
-            </li>
-            <li class="skill-item" onclick="openModal('furtividade')">
-                <div class="skill-main">
-                    <span class="skill-name">Furtividade</span>
-                    <span class="tag tag-nv">Nv. 1</span>
-                    <span class="tag tag-rank">Rank B</span>
-                </div>
-                <span class="status-tag status-locked">&lt;Bloqueada&gt;</span>
-            </li>
-            <li class="skill-item" onclick="openModal('adaptabilidade')">
-                <div class="skill-main">
-                    <span class="skill-name">Adaptabilidade</span>
-                    <span class="tag tag-nv">Nv. 1</span>
-                    <span class="tag tag-rank">Rank C</span>
-                </div>
-                <span class="status-tag status-locked">&lt;Bloqueada&gt;</span>
-            </li>
-            <li class="skill-item" onclick="openModal('criacao')">
-                <div class="skill-main">
-                    <span class="skill-name">Criação</span>
-                    <span class="tag tag-nv">Nv. 1</span>
-                    <span class="tag tag-rank">Rank A</span>
-                </div>
-                <span class="status-tag status-locked">&lt;Bloqueada&gt;</span>
-            </li>
-        </ul>
+    <div class="ui-container">
+        <div class="particle p1"></div>
+        <div class="particle p2"></div>
+        <div class="particle p3"></div>
+        <div class="particle p4"></div>
+        <div class="particle p5"></div>
 
-        <div class="matrix-box">
-            <div class="title" style="font-size: 1rem; color: #00ffcc;">Matriz de Temas Aplicados</div>
-            <table class="theme-table">
-                <thead>
-                    <tr>
-                        <th>Universo 1</th>
-                        <th>Universo 2</th>
-                        <th>Universo 3</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td>Hab. 1</td><td>Hab. 1</td><td>Hab. 1</td></tr>
-                    <tr><td>Hab. 2</td><td>Hab. 2</td><td>Hab. 2</td></tr>
-                    <tr><td>Hab. 3</td><td>Hab. 3</td><td>Hab. 3</td></tr>
-                </tbody>
-            </table>
+        <div class="top-bracket"></div>
+
+        <div class="card-outer">
+            <div class="card-middle">
+                <div class="card-inner">
+                    <div class="skill-title">[GOBLIN DE ALTA SOCIEDADE]</div>
+                    <div class="skill-rank">RANK: F</div>
+                    
+                    <div class="skill-description">
+                        <div class="text-block">
+                            <span class="label-highlight">EFEITO:</span> O REI GOBLIN ESTAVA PERDIDO EM PENSAMENTOS. "NOSSA CULTURA GOBLIN NÃO É NADA SOFISTICADA. TODAS AS NOSSAS PALAVRAS ACABAM EM KERURUK. COMO PODEREI MOSTRAR MINHA AUTORIDADE REAL ASSIM?!" FOI ENTÃO QUE A INGENUIDADE DO REI GOBLIN DEU AS CARAS. ISSO MESMO! DE AGORA EM DIANTE, IREI APENAS FALAR GORUK AO INVÉS DE KERURUK. GORUK! ESSA PALAVRA SE ENCAIXA MUITO BEM COM MINHA ESSÊNCIA NOBRE.
+                        </div>
+                        
+                        <div class="text-block">
+                            ※ PORÉM, AS BRIGAS ENTRE AS TRIBOS SÓ IRÁ PIORAR.
+                        </div>
+                        
+                        <div class="text-block">SSS CLASS REVIVAL HUNTER</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="modal-overlay" id="systemModal">
-        <div class="skill-details-window" id="modalWindow">
-            <div class="title" id="modalTitle">Título do Alerta</div>
-            <p class="skill-description" id="modalDescription">Descrição da habilidade aqui.</p>
-            
-            <div id="modalExtraContent"></div>
+    <div class="ui-container">
+        <div class="particle p1"></div>
+        <div class="particle p2"></div>
+        <div class="particle p3"></div>
+        <div class="particle p4"></div>
+        <div class="particle p5"></div>
 
-            <button class="close-btn" onclick="closeModal()">Fechar Registro</button>
+        <div class="top-bracket"></div>
+
+        <div class="card-outer">
+            <div class="card-middle">
+                <div class="card-inner">
+                    <div class="skill-title">[O AMOR DE UM CERTO REGRESSOR]</div>
+                    <div class="skill-rank">RANK: EX</div>
+                    
+                    <div class="skill-description">
+                        <div class="text-block">
+                            <span class="label-highlight">EFEITO:</span> O AMOR É UM VENENO PARA O REGRESSOR. AFINAL DE CONTAS, ELE NÃO PODE APROVEITAR O TEMPO COM AQUELA QUE AMA, NÃO IMPORTA O QUANTO TENTE. PORÉM, UM CERTO REGRESSOR TEVE UM DESEJO ARDENTE. "PERMITA QUE MEU AMOR MANTENHA AS MEMÓRIAS DELA". SEU DESEJO ALCANÇOU A TORRE E GANHOU VIDA.
+                        </div>
+                        
+                        <div class="text-block">
+                            VOCÊ E SEU AMOR EXISTIRÃO NA MESMA LINHA TEMPORAL. SE SEU AMOR REGRESSAR UM DIA, VOCÊ TAMBÉM VAI. SE VOCÊ REGRESSAR UM DIA, SEU AMOR IRÁ JUNTO. ESTE É UM PACTO DO ANEL. UM CASAMENTO NO TEMPO.
+                        </div>
+                        
+                        <div class="text-block">QUE A SORTE ESTEJA COM OS DOIS.</div>
+                        
+                        <div class="text-block">
+                            ※ PORÉM, ESSE EFEITO SÓ SERÁ ATIVADO SE OS DOIS ESTIVEREM APAIXONADOS UM PELO OUTRO.
+                        </div>
+
+                        <div class="text-block">SSS CLASS REVIVAL HUNTER</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <script>
-        const modal = document.getElementById('systemModal');
-        const modalWindow = document.getElementById('modalWindow');
-        const mTitle = document.getElementById('modalTitle');
-        const mDesc = document.getElementById('modalDescription');
-        const mExtra = document.getElementById('modalExtraContent');
+    <div class="ui-container">
+        <div class="particle p1"></div>
+        <div class="particle p2"></div>
+        <div class="particle p3"></div>
+        <div class="particle p4"></div>
+        <div class="particle p5"></div>
 
-        const skillsData = {
-            indice: {
-                title: "Índice Multiversal [Nv. 1]",
-                desc: "Permite ao usuário adquirir poderes, armas, itens, autoridades e etc... de outros mundos. Mas o usuário deve definir um tema à habilidade, podendo adquirir coisas somente dentro deste tema. Temas abrangentes são proibidos.",
-                type: 'unlocked',
-                extra: `
-                    <div class="sub-section-title">Penalidades & Condições</div>
-                    <ul class="penalty-list">
-                        <li>O usuário não pode adquirir ou usar habilidades sem ser por meio desta habilidade.</li>
-                        <li><span style="color: #ff3366; font-weight: bold;">[???] &lt;Oculto&gt;:</span> Ao escolher um universo, o usuário, ao completar a Torre, deverá viver como o protagonista da obra sem suas memórias e habilidades.</li>
-                    </ul>`
-            },
-            sobre_indice: {
-                title: "Sobre a Habilidade: Índice Multiversal",
-                desc: "Diretrizes e regras sistêmicas fundamentais ligadas à Habilidade Exclusiva do usuário.",
-                type: 'about',
-                extra: `
-                    <div class="sub-section-title">Regras de Sincronização</div>
-                    <ul class="penalty-list">
-                        <li><strong>1.</strong> Ela não pode ser copiada e ou anulada por NINGUÉM.</li>
-                        <li><strong>2.</strong> Clones que copiem as habilidades do usuário não podem usar o Índice ou habilidades atreladas, mas podem usar e evoluir as outras habilidades do usuário.</li>
-                        <li><strong>3.</strong> A cada nível da habilidade o usuário pode adicionar uma nova lista ou coluna no nível [5] ou [10], o usuário pode criar uma nova tabela [3x3].</li>
-                        <li><strong>4.</strong> O nível max da habilidade é [15].</li>
-                    </ul>
-                    <div class="sub-section-title">Sistema Extra & Progressão</div>
-                    <ul class="penalty-list">
-                        <li><strong>Nv. max de habilidade:</strong> [5].</li>
-                        <li><strong>Evolução:</strong> Após uma habilidade atingir o nível [5], uma [Pedra de Promoção] pode ser usada para evoluir [1] rank da habilidade.</li>
-                        <li><strong>Ranks de Habilidade:</strong> [E] < [D] < [C] < [B] < [A] < [S] < [Ex]</li>
-                    </ul>`
-            },
-            passos: {
-                title: "Passos Fantasma [Rank A]",
-                desc: "Habilidade passiva. Seus passos são leves como uma pluma e não emitem sons, mas pequenas vibrações podem ser detectadas.",
-                type: 'locked',
-                extra: `<div class="sub-section-title">&lt;Bloqueada&gt;</div>`
-            },
-            furtividade: {
-                title: "Furtividade [Rank B]",
-                desc: "Habilidade passiva. Permite ao usuário controlar o nível de sua presença.",
-                type: 'locked',
-                extra: `<div class="sub-section-title">&lt;Bloqueada&gt;</div>`
-            },
-            adaptabilidade: {
-                title: "Adaptabilidade [Rank C]",
-                desc: "Habilidade passiva. Permite a sua mente a se adaptar mais rápido às situações desconhecidas.",
-                type: 'locked',
-                extra: `<div class="sub-section-title">&lt;Bloqueada&gt;</div>`
-            },
-            criacao: {
-                title: "Criação [Rank A]",
-                desc: "Habilidade passiva. Permite que o usuário crie qualquer coisa física com maior facilidade que outros.",
-                type: 'locked',
-                extra: `<div class="sub-section-title">&lt;Bloqueada&gt;</div>`
-            }
-        };
+        <div class="top-bracket"></div>
 
-        function openModal(skillKey) {
-            const data = skillsData[skillKey];
-            if (!data) return;
+        <div class="card-outer">
+            <div class="card-middle">
+                <div class="card-inner">
+                    <div class="skill-title">[ECOS DE UM CORAÇÃO EM PRANTOS]</div>
+                    <div class="skill-rank">RANK: A+</div>
+                    
+                    <div class="skill-description">
+                        <div class="text-block">
+                            <span class="label-highlight">EFEITO:</span> VOCÊ PODE FORTALECER SUA AURA UTILIZANDO SUAS EMOÇÕES COMO COMBUSTÍVEL. QUÃO MAIS FORTE FOREM AS EMOÇÕES, MAIS REATIVA SERÁ SUA AURA. RESSENTIMENTO, RAIVA, TRISTEZA, ALEGRIA, NÃO IMPORTA QUE EMOÇÃO SEJA.
+                        </div>
+                        
+                        <div class="text-block">
+                            O FOGO QUEIMA SEM DISCRIMINAÇÃO TODA A MADEIRA QUE RECEBE.
+                        </div>
+                        
+                        <div class="text-block">
+                            ※ PORÉM, VOCÊ SE TORNARÁ CADA VEZ MAIS VICIADO NAS EMOÇÕES USADAS.
+                        </div>
 
-            modalWindow.classList.remove('locked-style', 'about-style');
-            
-            mTitle.innerText = data.title;
-            mDesc.innerHTML = data.desc;
-            mExtra.innerHTML = data.extra;
+                        <div class="text-block">SSS CLASS REVIVAL HUNTER</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-            // Configuração dinâmica de estilos baseada na aba/habilidade clicada
-            if (data.type === 'locked') {
-                modalWindow.classList.add('locked-style');
-                mTitle.style.color = '#ff3366';
-                mTitle.style.textShadow = '0 0 8px rgba(255,51,102,0.5)';
-            } else if (data.type === 'about') {
-                modalWindow.classList.add('about-style');
-                mTitle.style.color = '#00ffcc';
-                mTitle.style.textShadow = '0 0 8px rgba(0,255,204,0.5)';
-            } else {
-                mTitle.style.color = '#ffcc00';
-                mTitle.style.textShadow = '0 0 8px rgba(255,204,0,0.5)';
-            }
+    <div class="ui-container">
+        <div class="particle p1"></div>
+        <div class="particle p2"></div>
+        <div class="particle p3"></div>
+        <div class="particle p4"></div>
+        <div class="particle p5"></div>
 
-            modal.classList.add('active');
-        }
+        <div class="top-bracket"></div>
 
-        function closeModal() {
-            modal.classList.remove('active');
-        }
+        <div class="card-outer">
+            <div class="card-middle">
+                <div class="card-inner">
+                    <div class="skill-title">[INVOCAÇÃO DOS 100 FANTASMAS]</div>
+                    <div class="skill-rank">RANK: S</div>
+                    
+                    <div class="skill-description">
+                        <div class="text-block">
+                            <span class="label-highlight">EFEITO:</span> VOCÊ PODE INVOCAR AQUELES QUE ASSASSINOU COMO MONSTROS. SEUS AGENTES DA MORTE NÃO HERDARÃO AS HABILIDADES OU MEMÓRIAS DAS VIDAS QUE TINHAM. ELES SIMPLESMENTE SERÃO INVOCADOS COMO MONSTROS TAIS COMO GOBLINS, ORCS, ZUMBIS, ESQUELETOS, ETC.
+                        </div>
+                        
+                        <div class="text-block">
+                            ※ PORÉM, VOCÊ SÓ PODE FAZER UMA INVOCAÇÃO POR SEMANA.
+                        </div>
 
-        modal.addEventListener('click', function(e) {
-            if (e.target === modal) closeModal();
-        });
-    </script>
+                        <div class="text-block">SSS CLASS REVIVAL HUNTER</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ui-container">
+        <div class="particle p1"></div>
+        <div class="particle p2"></div>
+        <div class="particle p3"></div>
+        <div class="particle p4"></div>
+        <div class="particle p5"></div>
+
+        <div class="top-bracket"></div>
+
+        <div class="card-outer">
+            <div class="card-middle">
+                <div class="card-inner">
+                    <div class="skill-title">[CORTEJO DO MESTRE DAS MARIONETES]</div>
+                    <div class="skill-rank">CLASSE: S</div>
+                    
+                    <div class="skill-description">
+                        <div class="text-block">
+                            ERA UMA VEZ, EM UM CERTO MUNDO, UM VELHO MESTRE MARIONETISTA. FRÁGIL, ELE TEMIA TANTO O PESO DO AMOR QUANTO A ETERNIDADE DA SOLIDÃO.
+                        </div>
+
+                        <div class="text-block">
+                            "ENTÃO, CRIAREI OUTRO EU", PENSOU ELE.
+                        </div>
+
+                        <div class="text-block">
+                            E ASSIM, DEU VIDA A INCONTÁVEIS MARIONETES PARA QUE VIVESSEM E AMASSEM EM SEU LUGAR. E, UMA A UMA, DESCARTOU AQUELAS QUE JÁ NÃO LHE SERVIAM.
+                        </div>
+
+                        <div class="text-block">
+                            ESSA HABILIDADE É UMA FEITIÇARIA DOS FRACOS, CONCEDENDO AO USUÁRIO O PODER DE ESCOLHER QUAIS MEMÓRIAS MANTER... E QUAIS DESCARTAR.
+                        </div>
+
+                        <div class="text-block">
+                            VOCÊ PODE CRIAR ATÉ 13 MARIONETES COM A MESMA APARÊNCIA E HABILIDADES QUE VOCÊ. QUANDO UMA MARIONETE MORRE, OUTRA DESPERTA. MARIONETES QUEBRADAS PODEM SER REPARADAS.
+                        </div>
+
+                        <div class="text-block">
+                            CONCEDE A VOCÊ UMA RÉPLICA DA IMORTALIDADE. UMA ETERNIDADE REMONTADA.
+                        </div>
+                        
+                        <div class="text-block">
+                            ※ NO ENTANTO, AS MEMÓRIAS NÃO SÃO COMPARTILHADAS ENTRE AS MARIONETES.
+                        </div>
+
+                        <div class="text-block">SSS CLASS REVIVAL HUNTER</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ui-container">
+        <div class="particle p1"></div>
+        <div class="particle p2"></div>
+        <div class="particle p3"></div>
+        <div class="particle p4"></div>
+        <div class="particle p5"></div>
+
+        <div class="top-bracket"></div>
+
+        <div class="card-outer">
+            <div class="card-middle">
+                <div class="card-inner">
+                    <div class="skill-title">[BARREIRA DO FOGO INFERNAL]</div>
+                    <div class="skill-rank">RANK: S-</div>
+                    
+                    <div class="skill-description">
+                        <div class="text-block">
+                            <span class="label-highlight">EFEITOS:</span> SE ARREPENDA DO SEU RANCOR INTERMINÁVEL, DO SEU RESSENTIMENTO NUNCA OUVIDO E DOS SEUS DESEJOS NUNCA ALCANÇADOS. QUEIME TUDO. "ESTÁ QUEIMANDO." É QUENTE? TRANSFORME O MUNDO EM CINZAS. "SINTO QUE ESTOU MORRENDO." ENTÃO MATE. DESDE QUE DESEJE, UMA AURA DE FOGO INFERNAL APARECERÁ EM UM RAIO DE 2KM. NINGUÉM PODERÁ SAIR DESSE INFERNO SEM A SUA PERMISSÃO, NÃO IMPORTA QUEM SEJA.
+                        </div>
+                        
+                        <div class="text-block">
+                            ※ PORÉM, VOCÊ PRECISARÁ FICAR DENTRO DA BARREIRA PARA QUE ELA SE MANTENHA DE PÉ.
+                        </div>
+
+                        <div class="text-block">SSS CLASS REVIVAL HUNTER</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ui-container">
+        <div class="particle p1"></div>
+        <div class="particle p2"></div>
+        <div class="particle p3"></div>
+        <div class="particle p4"></div>
+        <div class="particle p5"></div>
+
+        <div class="top-bracket"></div>
+
+        <div class="card-outer">
+            <div class="card-middle">
+                <div class="card-inner">
+                    <div class="skill-title">[REENCARNAÇÃO DAS CEM ALMAS]</div>
+                    <div class="skill-rank">RANK: SSS</div>
+                    
+                    <div class="skill-description">
+                        <div class="text-block">
+                            <span class="label-highlight">EFEITO:</span> VOCÊ PODE INVOCAR AS PESSOAS QUE MATA. OS MORTOS NÃO HERDARÃO AS HABILIDADES QUE POSSUÍAM QUANDO ESTAVAM VIVOS. MAS, SE VOCÊ DESEJAR, ELES PODEM HERDAR A APARÊNCIA E AS MEMÓRIAS DA VIDA PASSADA. CASO CONTRÁRIO, ELES SÓ SERÃO INVOCADOS COMO MONSTROS.
+                        </div>
+                        
+                        <div class="text-block">
+                            ※ PORÉM, VOCÊ SÓ PODE FAZER UMA INVOCAÇÃO POR SEMANA.
+                        </div>
+
+                        <div class="text-block">SSS CLASS REVIVAL HUNTER</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ui-container">
+        <div class="particle p1"></div>
+        <div class="particle p2"></div>
+        <div class="particle p3"></div>
+        <div class="particle p4"></div>
+        <div class="particle p5"></div>
+
+        <div class="top-bracket"></div>
+
+        <div class="card-outer">
+            <div class="card-middle">
+                <div class="card-inner">
+                    <div class="skill-title">[RESSENTIMENTO CAI COMO CHUVA]</div>
+                    <div class="skill-rank">RANK: S-</div>
+                    
+                    <div class="skill-description">
+                        <div class="text-block">
+                            <span class="label-highlight">EFEITO:</span> ELES NÃO VEEM. ELES NÃO OUVEM. AS PESSOAS TÊM A TENDÊNCIA DE AGIR COMO SE ALGO QUE NÃO PODEM VER DIANTE DOS OLHOS NÃO EXISTISSE. "ELES SÃO CEGOS." SIM, ELES SÃO. "TOLOS IGNORANTES." ENTÃO MOSTRE A ELES. MOSTRE QUANTOS MORRERAM POR CAUSA DA IGNORÂNCIA DELES. OS CÉUS IRÃO DERRAMAR FELIZMENTE UMA CHUVA CARMESIM, COMBINADO COM O SANGUE DOS INOCENTES DESSE MUNDO.
+                        </div>
+                        
+                        <div class="text-block">
+                            ※ PORÉM, APENAS O SANGUE QUE VOCÊ PRESENCIOU SER DERRAMADO PODE VIRAR CHUVA.
+                        </div>
+
+                        <div class="text-block">SSS CLASS REVIVAL HUNTER</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ui-container">
+        <div class="particle p1"></div>
+        <div class="particle p2"></div>
+        <div class="particle p3"></div>
+        <div class="particle p4"></div>
+        <div class="particle p5"></div>
+
+        <div class="top-bracket"></div>
+
+        <div class="card-outer">
+            <div class="card-middle">
+                <div class="card-inner">
+                    <div class="skill-title">[A SALVAÇÃO DA DEUSA DILACERADA]</div>
+                    <div class="skill-rank">CLASSE: A+</div>
+                    
+                    <div class="skill-description">
+                        <div class="text-block">
+                            <span class="label-highlight">EFEITOS:</span> HOUVE UM TEMPO EM QUE UMA DEUSA DEDICOU SUA EXISTÊNCIA A UM HERÓI. MESMO APÓS SER DILACERADA POR ELE, AINDA ANSIAVA POR PERMANECER AO SEU LADO. ENTÃO, DESCEU DOS CÉUS E SELOU A SI MESMA DENTRO DE UMA CARTA DE HABILIDADE.
+                        </div>
+                        
+                        <div class="text-block">
+                            A DEUSA TRANSFORMA MEMÓRIAS EM PODER. AO OFERECER LEMBRANÇAS A ELA, VOCÊ PODE AMPLIAR SUA FORÇA E HABILIDADES. QUANTO MAIS PRECIOSA FOR A MEMÓRIA SACRIFICADA, MAIOR SERÁ O APRIMORAMENTO CONCEDIDO.
+                        </div>
+                        
+                        <div class="text-block">
+                            ※ PORÉM, ESSE PODER É EFÊMERO E NÃO DURA POR MUITO TEMPO.
+                        </div>
+
+                        <div class="text-block">SSS CLASS REVIVAL HUNTER</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ui-container">
+        <div class="particle p1"></div>
+        <div class="particle p2"></div>
+        <div class="particle p3"></div>
+        <div class="particle p4"></div>
+        <div class="particle p5"></div>
+
+        <div class="top-bracket"></div>
+
+        <div class="card-outer">
+            <div class="card-middle">
+                <div class="card-inner">
+                    <div class="skill-title">CONHECIMENTO DE BATALHA</div>
+                    <div class="skill-rank">RANK: B</div>
+                    
+                    <div class="skill-description">
+                        <div class="text-block">
+                            <span class="label-highlight">EFEITO:</span> TE DÁ AS QUALIDADES DE UM GENERAL EXCEPCIONAL. É UMA HABILIDADE QUE TE DÁ CONHECIMENTO SOBRE TUDO O QUE ACONTECE NO CAMPO DE BATALHA. COM ELA VOCÊ PODE SABER DE FORMA INSTINTIVA SE OS SEUS ALIADOS ESTÃO EM VANTAGEM OU DESVANTAGEM E QUAL O PONTO FRACO NA LINHA DE DEFESA INIMIGA.
+                        </div>
+                        
+                        <div class="text-block">SSS CLASS REVIVAL HUNTER</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ui-container">
+        <div class="particle p1"></div>
+        <div class="particle p2"></div>
+        <div class="particle p3"></div>
+        <div class="particle p4"></div>
+        <div class="particle p5"></div>
+
+        <div class="top-bracket"></div>
+
+        <div class="card-outer">
+            <div class="card-middle">
+                <div class="card-inner">
+                    <div class="skill-title">[OLHO DO DETETIVE]</div>
+                    <div class="skill-rank">RANK: B-</div>
+                    
+                    <div class="skill-description">
+                        <div class="text-block">
+                            <span class="label-highlight">EFEITO:</span> VOCÊ PODE VER A CONTAGEM DE ABATES DE ALGUÉM. ISSO NÃO INCLUI ASSASSINATOS INDIRETOS. SÓ SÃO CONTADOS OS ASSASSINATOS COMETIDOS COM INTENÇÕES CLARAS.
+                        </div>
+                        
+                        <div class="text-block">
+                            ※ ENTRETANTO, VOCÊ NÃO CONSEGUE SABER O MÉTODO DO ASSASSINATO.
+                        </div>
+
+                        <div class="text-block">SSS CLASS REVIVAL HUNTER</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ui-container">
+        <div class="particle p1"></div>
+        <div class="particle p2"></div>
+        <div class="particle p3"></div>
+        <div class="particle p4"></div>
+        <div class="particle p5"></div>
+
+        <div class="top-bracket"></div>
+
+        <div class="card-outer">
+            <div class="card-middle">
+                <div class="card-inner">
+                    <div class="skill-title">[SÓ VOCÊ PODE PREVENIR O FOGO]</div>
+                    <div class="skill-rank">RANK: A</div>
+                    
+                    <div class="skill-description">
+                        <div class="text-block">
+                            <span class="label-highlight">EFEITO:</span> AI, TÁ QUENTE! SE DEIXAR ALGO QUENTE ASSIM SOZINHO, SUA CASA INTEIRA PODERIA SER QUEIMADA. BEM, NÃO SE PREOCUPE MAIS. QUALQUER OBJETO OU FORMA DE VIDA ESCOLHIDA POR VOCÊ GANHA IMUNIDADE AO FOGO E NÃO PODE MAIS SER QUEIMADA. APROVEITE SUA NOVA VIDA SEGURO DO MEDO DO FOGO!
+                        </div>
+                        
+                        <div class="text-block">
+                            ※ PORÉM, DANO DE FONTES DE [ÁGUA] OU [GELO] SÃO AMPLIFICADOS EM 300%.
+                        </div>
+
+                        <div class="text-block">SSS CLASS REVIVAL HUNTER</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Habilidade de Revival Hunter com IA -->
+    <div class="ui-container">
+        <div class="particle p1"></div>
+        <div class="particle p2"></div>
+        <div class="particle p3"></div>
+        <div class="particle p4"></div>
+        <div class="particle p5"></div>
+
+        <div class="top-bracket"></div>
+
+        <div class="card-outer">
+            <div class="card-middle">
+                <div class="card-inner">
+                    <div class="skill-title">[ARQUITETO DO LABIRINTO]</div>
+                    <div class="skill-rank">RANK: A-</div>
+                    
+                    <div class="skill-description">
+                        <div class="text-block">
+                            <span class="label-highlight">EFEITO:</span> CONCEDE AO USUÁRIO A CAPACIDADE DE ALTERAR E MANIPULAR A GEOMETRIA DE ESPAÇOS FECHADOS OU DUNGEONS. É POSSÍVEL REARRANJAR CORREDORES, CRIAR PAREDES FALSAS E MOVER SALAS INTEIRAS PARA DESORIENTAR OS INIMIGOS. O CONSUMO DE MANA DEPENDE DIRETAMENTE DA ESCALA DA MUDANÇA ESTRUTURAL.
+                        </div>
+                        
+                        <div class="text-block">
+                            OS MAIS TOLOS SE PERDEM NO SEU PRÓPRIO CAMINHO, MAS OS SÁBIOS REESCREVEM O MAPA.
+                        </div>
+                        
+                        <div class="text-block">
+                            ※ PORÉM, A HABILIDADE SÓ PODE SER ATIVADA EM AMBIENTES SUBTERRÂNEOS OU INTERIORES.
+                        </div>
+
+                        <div class="text-block">SSS CLASS REVIVAL HUNTER</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ui-container">
+        <div class="particle p1"></div>
+        <div class="particle p2"></div>
+        <div class="particle p3"></div>
+        <div class="particle p4"></div>
+        <div class="particle p5"></div>
+
+        <div class="top-bracket"></div>
+
+        <div class="card-outer">
+            <div class="card-middle">
+                <div class="card-inner">
+                    <div class="skill-title">[MESTRE DE MARIONETES]</div>
+                    <div class="skill-rank">RANK: B</div>
+                    
+                    <div class="skill-description">
+                        <div class="text-block">
+                            <span class="label-highlight">EFEITO:</span> CONECTA FIOS DE ENERGIA INVISÍVEIS A ALVOS INANIMADOS OU CRIATURAS ENFRAQUECIDAS. PERMITE CONTROLAR SEUS MOVIMENTOS FÍSICOS À DISTÂNCIA COMO SE FOSSEM BONECOS DE PANO. O PODER DE ATAQUE DO ALVO CONTROLADO É BASEADO NA FORÇA ORIGINAL DELE.
+                        </div>
+                        
+                        <div class="text-block">
+                            QUEM SE IMPORTA COM A VONTADE PRÓPRIA QUANDO SEUS DEDOS PODEM DANÇAR COM A VIDA ALHEIA?
+                        </div>
+                        
+                        <div class="text-block">
+                            ※ PORÉM, SE A MARIONETE RECEBER UM DANO MASSIVO, OS FIOS SE ROMPEM IMEDIATAMENTE.
+                        </div>
+
+                        <div class="text-block">SSS CLASS REVIVAL HUNTER</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ui-container">
+        <div class="particle p1"></div>
+        <div class="particle p2"></div>
+        <div class="particle p3"></div>
+        <div class="particle p4"></div>
+        <div class="particle p5"></div>
+
+        <div class="top-bracket"></div>
+
+        <div class="card-outer">
+            <div class="card-middle">
+                <div class="card-inner">
+                    <div class="skill-title">[CONTROLE REMOTO]</div>
+                    <div class="skill-rank">RANK: B-</div>
+                    
+                    <div class="skill-description">
+                        <div class="text-block">
+                            <span class="label-highlight">EFEITO:</span> PERMITE ATIVAR QUALQUER OBJETO MÁGICO, MECANISMO OU DISPOSITIVO PREVIAMENTE MARCADO SEM A NECESSIDADE DE CONTATO FÍSICO. A DISTÂNCIA MÁXIMA DE OPERAÇÃO É DE 500 METROS, DESDE QUE O USUÁRIO MANTENHA A LINHA DE VISÃO OU FOCO MENTAL NO ALVO.
+                        </div>
+                        
+                        <div class="text-block">
+                            A DISTÂNCIA NÃO É UMA BARREIRA PARA AQUELES QUE CONTROLAM OS GATILHOS DO MUNDO.
+                        </div>
+                        
+                        <div class="text-block">
+                            ※ PORÉM, HÁ UM ATRASO DE 1 SEGUNDO ENTRE O COMANDO MENTAL E A ATIVAÇÃO REAL.
+                        </div>
+
+                        <div class="text-block">SSS CLASS REVIVAL HUNTER</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ui-container">
+        <div class="particle p1"></div>
+        <div class="particle p2"></div>
+        <div class="particle p3"></div>
+        <div class="particle p4"></div>
+        <div class="particle p5"></div>
+
+        <div class="top-bracket"></div>
+
+        <div class="card-outer">
+            <div class="card-middle">
+                <div class="card-inner">
+                    <div class="skill-title">[INSTALAÇÃO DE ARMADILHA]</div>
+                    <div class="skill-rank">RANK: C</div>
+                    
+                    <div class="skill-description">
+                        <div class="text-block">
+                            <span class="label-highlight">EFEITO:</span> OCULTA UM DISPOSITIVO DE DANO OU RESTRIÇÃO NO SOLO FÍSICO. AS ARMADILHAS FICAM TOTALMENTE INVISÍVEIS PARA INIMIGOS QUE NÃO POSSUAM HABILIDADES DE PERCEPÇÃO DE RANK B OU SUPERIOR. QUANDO ATIVADA, PROVOCA IMOBILIZAÇÃO POR 3 SEGUNDOS OU DANO CONTÍNUO.
+                        </div>
+                        
+                        <div class="text-block">
+                            UM PASSO EM FALSO É TUDO O QUE SEPARA O CAÇADOR DA PRESA DETERMINADA.
+                        </div>
+                        
+                        <div class="text-block">
+                            ※ PORÉM, APENAS 3 ARMADILHAS PODEM ESTAR ATIVAS SIMULTANEAMENTE NO MESMO MAPA.
+                        </div>
+
+                        <div class="text-block">SSS CLASS REVIVAL HUNTER</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ui-container">
+        <div class="particle p1"></div>
+        <div class="particle p2"></div>
+        <div class="particle p3"></div>
+        <div class="particle p4"></div>
+        <div class="particle p5"></div>
+
+        <div class="top-bracket"></div>
+
+        <div class="card-outer">
+            <div class="card-middle">
+                <div class="card-inner">
+                    <div class="skill-title">[TRONO DA ESPADA]</div>
+                    <div class="skill-rank">RANK: A+</div>
+                    
+                    <div class="skill-description">
+                        <div class="text-block">
+                            <span class="label-highlight">EFEITO:</span> VINDO DE OUTRO MUNDO, ELE CONQUISTOU A TORRE DE SEU MUNDO ATÉ O 99º ANDAR, MAS FALHOU NO 100º. INSATISFEITO, ELE FOI INCAPAZ DE DESISTIR DE SEUS DESEJOS TERRENOS E SE TORNOU UM ESPÍRITO. ELE NÃO PODE AFETAR FISICAMENTE NADA NESTE MUNDO, MAS É CAPAZ DE SE COMUNICAR COM O DETENTOR DESTA HABILIDADE.
+                        </div>
+                        
+                        <div class="text-block">
+                            FIQUE ENCANTADO POR SUA HABILIDADE E EXPERIÊNCIA, E PEÇA CONSELHOS A ELE!
+                        </div>
+                        
+                        <div class="text-block">
+                            ※ APENAS O DETENTOR DESTA HABILIDADE É CAPAZ DE SENTIR A SUA PRESENÇA.
+                        </div>
+                        <div class="text-block">SSS CLASS REVIVAL HUNTER</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
