@@ -114,7 +114,7 @@ function triggerSlotSelection(row, col) {
 
     let serieName = col === 0 ? "Regressor" : col === 1 ? "Revival Hunter" : "Time Stop Ability";
     document.getElementById('modalTitle').innerText = `Sincronizar Universo: ${serieName}`;
-    document.getElementById('modalDescription').innerText = `Selecione uma habilidade do registro deste mundo para fixar no slot da linha [${row + 1}].`;
+    document.getElementById('modalDescription').innerText = `Selecione uma habilidade do registro deste mundo no slot [${row + 1}].`;
 
     let optionsHtml = '<div class="selection-menu-list">';
     universeSkills[col].forEach((skill, index) => {

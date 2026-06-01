@@ -301,7 +301,7 @@ body {
     line-height: 1.5;
     color: #cbd5e1;
     margin-top: 15px;
-    margin-bottom: 5px;
+    margin-bottom: 10px;
 }
 
 .sub-section-title {
@@ -422,6 +422,7 @@ body {
     overflow-y: auto;
     max-height: 40vh;
     padding-right: 4px;
+    margin-bottom: 10px;
 }
 #modalExtraContent::-webkit-scrollbar {
     width: 4px;
