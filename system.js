@@ -7,6 +7,83 @@ const mDesc = document.getElementById('modalDescription');
 const mExtra = document.getElementById('modalExtraContent');
 const mCloseBtn = document.getElementById('modalCloseBtn');
 
+// ==========================================
+// FUNÇÃO DE CONFIGURAÇÃO DE CORES POR RANK (100% CORRIGIDA)
+// ==========================================
+function getRankColor(rank) {
+    if (!rank) return '#cbd5e1';
+    const r = rank.toUpperCase().trim().replace('RANK', '').trim();
+    
+    const exactColors = {
+        // Classes Divinas
+        '???': '#f0f8ff',
+        '??': '#f0f8ff',
+        '?': '#f0f8ff',
+
+        // Classes Superiores
+        'EX': '#ffff00',   // 🌟 Ouro Elétrico / Amarelo Neon (A cor que mais ativa os receptores do olho humano no escuro)
+        'SSS': '#ff0044',  // 👑 Rubi Imperial / Carmesim Elétrico (Substitui o vinho escuro por um tom magnético de altíssima atenção)
+        'SS': '#ff0000',   // 🔴 Vermelho Vivo Puro
+        'S+': '#ff5500',   // 🟠 Laranja Avermelhado Neon
+        'S': '#ff7700',    // 🟠 Laranja Intenso
+
+        // Classes Altas
+        'A+': '#ffaa00',   // 🟡 Âmbar / Amarelo Ouro
+        'A': '#ffd200',    // 🟡 Amarelo Forte
+        'A-': '#ffeb60',   // 🍋 Amarelo Claro Suave
+
+        // Classes Médias e Baixas
+        'B': '#4ade80',    // 🟢 Verde Claro Limpo
+        'C': '#22c55e',    // 🍏 Verde Padrão
+        'D': '#38bdf8',    // 🔵 Azul Claro / Ciano Suave
+
+        // Classes de Falha / Inúteis
+        'E': '#564279',    // 🟣 Roxo Muted
+        'F': '#8d8d8d',    // 💜 Roxo Ultra Escuro
+        'FF': '#7b7b7b',   // 🖤 Cinza Escuro Slate
+        'FFF': '#6e6e6e'   // 💀 Grafite Fantasma 
+    };
+    
+    if (exactColors[r]) {
+        return exactColors[r];
+    }
+    
+    // 2. Fallback por inclusão parcial (A ordem do maior para o menor importa!)
+    if (r.includes('FFF')) return '#141414';
+    if (r.includes('FF'))  return '#374151';
+    if (r.includes('EX'))  return '#ffd700';
+    if (r.includes('SSS')) return '#800020';
+    if (r.includes('SS'))  return '#ff0000';
+    if (r.includes('S+'))  return '#ff4500';
+    if (r.includes('S'))   return '#ff6600';
+    if (r.includes('A+'))  return '#ffcc00';
+    if (r.includes('A-'))  return '#fef08a';
+    if (r.includes('A'))   return '#facc15'; 
+    if (r.includes('B'))   return '#a3e635';
+    if (r.includes('C'))   return '#4ade80';
+    if (r.includes('D'))   return '#38bdf8';
+    if (r.includes('E'))   return '#a855f7';
+    if (r.includes('F'))   return '#581c87';
+    
+    if (r.includes('???')) return '#ffffff';
+    if (r.includes('??'))  return '#ffffff';
+    if (r.includes('?'))   return '#ffffff';
+    
+    return '#cbd5e1'; // Retorno seguro
+}
+
+// INICIALIZAÇÃO: COLORIR OS RANKS DO HTML ESTÁTICO
+function colorStaticRanks() {
+    document.querySelectorAll('.tag-rank').forEach(tag => {
+        const rankText = tag.textContent.replace('Rank', '').trim();
+        const color = getRankColor(rankText);
+        tag.style.color = color;
+        tag.style.borderColor = color;
+        tag.style.background = `${color}15`; // Adiciona 8% de opacidade no fundo para efeito neon
+        tag.style.textShadow = `0 0 6px ${color}80`;
+    });
+}
+
 const staticSkills = {
     indice: {
         title: "Índice Multiversal [Nv. 1]",
@@ -70,7 +147,6 @@ function openModal(key) {
     modalWindow.classList.remove('locked-style', 'about-style');
     mCloseBtn.style.display = "block";
     
-    // Restaura a estrutura HTML original para os modais estáticos normais
     modalWindow.innerHTML = `
         <div class="title" id="modalTitle"></div>
         <p class="skill-description" id="modalDescription"></p>
@@ -104,7 +180,6 @@ function triggerSlotSelection(row, col) {
     modalWindow.style.clipPath = '';
     modalWindow.style.padding = '';
 
-    // Restaura a estrutura HTML padrão do modal do sistema para renderizar a lista
     modalWindow.innerHTML = `
         <div class="title" id="modalTitle"></div>
         <p class="skill-description" id="modalDescription"></p>
@@ -127,11 +202,12 @@ function triggerSlotSelection(row, col) {
                     <span class="option-rank" style="color: #666;">[Rank ${skill.rank}]</span>
                 </div>`;
         } else {
-            // Adicionado o 'event' como parâmetro para podermos parar o clique fantasma
+            // MUDANÇA: A cor do Rank muda dinamicamente no menu de opções
+            const rankColor = getRankColor(skill.rank);
             optionsHtml += `
                 <div class="selection-option" onclick="equipSkill(event, ${index})">
                     <span class="option-name">${skill.name}</span>
-                    <span class="option-rank">[Rank ${skill.rank}]</span>
+                    <span class="option-rank" style="color: ${rankColor}; text-shadow: 0 0 5px ${rankColor}aa;">[Rank ${skill.rank}]</span>
                 </div>`;
         }
     });
@@ -142,7 +218,6 @@ function triggerSlotSelection(row, col) {
 }
 
 function equipSkill(e, skillIndex) {
-    // CRUCIAL: Impede que o clique no menu ative o clique de baixo da tabela ao mesmo tempo!
     if (e) e.stopPropagation();
 
     const currentRow = activeRow;
@@ -151,13 +226,14 @@ function equipSkill(e, skillIndex) {
     const skill = universeSkills[currentCol][skillIndex];
     const slot = document.getElementById(`slot-${currentRow}-${currentCol}`);
     
+    // MUDANÇA: Aplica a cor customizada diretamente na tag do slot quando equipado
+    const rankColor = getRankColor(skill.rank);
     slot.classList.add('equipped');
-    slot.innerHTML = `${skill.name} <span class="slot-rank">${skill.rank}</span>`;
+    slot.innerHTML = `${skill.name} <span class="slot-rank" style="color: ${rankColor}; text-shadow: 0 0 5px ${rankColor}80;">${skill.rank}</span>`;
     
     slot.setAttribute('data-skill-index', skillIndex);
     equippedSkillsTracker.push(`${currentCol}-${skillIndex}`);
     
-    // Vincula o clique de detalhes com segurança travando as coordenadas
     slot.onclick = function(event) {
         event.stopPropagation();
         showEquippedSkill(skill.name, skill.rank, skill.desc, currentRow, currentCol);
@@ -173,6 +249,8 @@ function showEquippedSkill(name, rank, desc, row, col) {
     modalWindow.style.boxShadow = '';
     modalWindow.style.clipPath = '';
     modalWindow.style.padding = '';
+
+    const rankColor = getRankColor(rank);
 
     if (col === 1) {
         modalWindow.style.background = 'transparent';
@@ -195,6 +273,7 @@ function showEquippedSkill(name, rank, desc, row, col) {
             }
         });
 
+        // MUDANÇA: Aplica a cor correspondente no cabeçalho estilizado do Universo 2
         modalWindow.innerHTML = `
             <div class="ui-container" style="max-width: 100%;">
                 <div class="top-bracket"></div>
@@ -203,7 +282,7 @@ function showEquippedSkill(name, rank, desc, row, col) {
                     <div class="card-middle">
                         <div class="card-inner">
                             <div class="skill-title">[${name.toUpperCase()}]</div>
-                            <div class="skill-rank">RANK: ${rank.toUpperCase()}</div>
+                            <div class="skill-rank" style="color: ${rankColor}; text-shadow: 0 0 8px ${rankColor}aa;">RANK: ${rank.toUpperCase()}</div>
                             
                             <div class="skill-description">
                                 ${textBlocksHtml}
@@ -231,7 +310,8 @@ function showEquippedSkill(name, rank, desc, row, col) {
         const currentDesc = document.getElementById('modalDescription');
         const currentExtra = document.getElementById('modalExtraContent');
 
-        currentTitle.innerText = `${name} [Rank ${rank}]`;
+        // MUDANÇA: Destaca a cor do Rank no título da janela flutuante padrão
+        currentTitle.innerHTML = `${name} [<span style="color: ${rankColor}; text-shadow: 0 0 5px ${rankColor}aa;">Rank ${rank}</span>]`;
         currentTitle.style.color = '#ffcc00';
         currentDesc.innerText = desc;
         
@@ -271,6 +351,9 @@ function closeModal() {
 modal.addEventListener('click', function(e) {
     if (e.target === modal) closeModal();
 });
+
+// Executa a colorização dos elementos fixos assim que o script carregar
+colorStaticRanks();
 
 window.openModal = openModal;
 window.triggerSlotSelection = triggerSlotSelection;
